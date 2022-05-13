@@ -161,6 +161,9 @@ module.exports = async function (outputDirectory, data) {
   if (!fs.existsSync(outputDirectory)) {
     fs.mkdirSync(outputDirectory, { recursive: true });
   }
+
+  toc_arr = [];
+
   for (const c in data) {
     const [sourceFileName, contractName] = c.split(':');
     const buildInfo = processBuildInfo(sourceFileName, contractName, data[c]);
@@ -174,5 +177,10 @@ module.exports = async function (outputDirectory, data) {
       path.join(dirName, fileName + '.md'),
       text
     );
+    //toc_path = path.relative(dirName, 'docs/contract/ecosystem');
+    toc_arr.push(`* [${contractName}](${buildInfo.source.replace('.sol', '.md')})`);
   }
+  toc_text = '# Solidity documentation\n\n### Table of contents\n\n' + toc_arr.join('\n');
+  fs.writeFileSync(path.join(outputDirectory, 'README.md'), toc_text);
+
 };
